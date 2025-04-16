@@ -1,0 +1,12 @@
+ec2
+ecr
+vpc
+s3
+rds
+iam
+clodfront
+lambda
+secret manager
+dynamodb
+sqs
+sns
