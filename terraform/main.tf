@@ -90,18 +90,14 @@ module "lambda" {
   source = "./modules/lambda"
 
   environment           = var.environment
-  filename              = var.lambda_filename
-  function_name         = var.lambda_function_name
-  role_arn              = module.iam.role_arn
-  handler               = var.lambda_handler
-  runtime               = var.lambda_runtime
-  timeout               = var.lambda_timeout
-  memory_size           = var.lambda_memory_size
-  environment_variables = var.lambda_environment_variables
-  subnet_ids            = module.vpc.private_subnet_ids
-  security_group_ids    = [module.ec2.security_group_id]
-  log_retention_days    = var.lambda_log_retention_days
-  event_source_arn      = var.lambda_event_source_arn
+  function_name       = "MyLambdaFunction"
+  runtime             = "python3.9"
+  handler             = "lambda_function.lambda_handler"
+  role_arn            = aws_iam_role.lambda_exec.arn
+  source_path         = "./lambda_function.zip"
+  environment_vars    = {
+    ENV = "production"
+  }
 }
 
 # Secrets Manager Module
@@ -131,4 +127,38 @@ module "elasticache" {
   parameter_group_name   = var.elasticache_parameter_group_name
   port                   = var.elasticache_port
   transit_encryption_enabled = var.elasticache_transit_encryption_enabled
+}
+
+module "sqs" {
+  source = "./modules/sqs"
+
+  queue_name                = var.sqs_queue_name
+  delay_seconds             = var.sqs_delay_seconds
+  max_message_size          = var.sqs_max_message_size
+  message_retention_seconds = var.sqs_message_retention_seconds
+  receive_wait_time_seconds = var.sqs_receive_wait_time_seconds
+  visibility_timeout_seconds = var.sqs_visibility_timeout_seconds
+  environment              = var.environment
+}
+
+module "sns" {
+  source = "./modules/sns"
+
+  topic_name    = var.sns_topic_name
+  environment   = var.environment
+  subscriptions = var.sns_subscriptions
+}
+
+module "dynamodb" {
+  source = "./modules/dynamodb"
+
+  table_name                = var.dynamodb_table_name
+  billing_mode             = var.dynamodb_billing_mode
+  hash_key                 = var.dynamodb_hash_key
+  range_key                = var.dynamodb_range_key
+  read_capacity            = var.dynamodb_read_capacity
+  write_capacity           = var.dynamodb_write_capacity
+  attributes               = var.dynamodb_attributes
+  global_secondary_indexes = var.dynamodb_global_secondary_indexes
+  environment              = var.environment
 } 
