@@ -1,24 +1,57 @@
-variable "function_name" {
+# Lambda Variables
+variable "lambda_filename" {
+  description = "Path to the function's deployment package"
   type        = string
-  description = "Lambda function name"
+  default     = "lambda_function.zip"
 }
 
-variable "runtime" {
+variable "lambda_function_name" {
+  description = "Name of the Lambda function"
   type        = string
-  description = "Lambda runtime environment"
+  default     = "app-function"
 }
 
-variable "handler" {
+variable "lambda_handler" {
+  description = "Function entrypoint in your code"
   type        = string
-  description = "Entry point for the Lambda function"
+  default     = "index.handler"
 }
 
-variable "role_arn" {
+variable "lambda_runtime" {
+  description = "Runtime environment for the Lambda function"
   type        = string
-  description = "IAM role ARN for Lambda execution"
+  default     = "nodejs18.x"
 }
 
-variable "source_path" {
+variable "lambda_timeout" {
+  description = "Amount of time your Lambda Function has to run in seconds"
+  type        = number
+  default     = 30
+}
+
+variable "lambda_memory_size" {
+  description = "Amount of memory in MB your Lambda Function can use at runtime"
+  type        = number
+  default     = 128
+}
+
+variable "lambda_environment_variables" {
+  description = "Environment variables for the Lambda function"
+  type        = map(string)
+  default     = {
+    ENVIRONMENT = "dev"
+    DB_HOST     = "localhost"
+  }
+}
+
+variable "lambda_log_retention_days" {
+  description = "Number of days to retain Lambda function logs"
+  type        = number
+  default     = 14
+}
+
+variable "lambda_event_source_arn" {
+  description = "ARN of the event source that will trigger the Lambda function"
   type        = string
-  description = "Path to the Lambda deployment package (zip file)"
+  default     = ""
 }
