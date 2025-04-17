@@ -1,6 +1,10 @@
 resource "aws_s3_bucket" "main" {
   bucket = var.bucket_name
 
+  create_bucket_configuration {
+    location_constraint = "us-east-1"
+  }
+
   tags = {
     Name = "${var.environment}-s3-bucket"
   }
