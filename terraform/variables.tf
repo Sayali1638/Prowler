@@ -1,8 +1,7 @@
 # Common Variables
 variable "environment" {
-  description = "Environment name (e.g., dev, prod)"
+  description = "Environment name for tagging"
   type        = string
-  default     = "dev"
 }
 
 # VPC Variables
@@ -317,51 +316,113 @@ variable "secrets_manager_policy_json" {
 EOF
 }
 
-# ElastiCache Variables
-variable "elasticache_cluster_id" {
-  description = "ID for the ElastiCache cluster"
+
+
+
+# SQS Variables
+variable "sqs_queue_name" {
+  description = "The name of the SQS queue"
   type        = string
-  default     = "redis-cluster"
 }
 
-variable "elasticache_cluster_description" {
-  description = "Description for the ElastiCache cluster"
-  type        = string
-  default     = "Redis cluster created by Terraform"
-}
-
-variable "elasticache_node_type" {
-  description = "The compute and memory capacity of the nodes in the cluster"
-  type        = string
-  default     = "cache.t3.micro"
-}
-
-variable "elasticache_num_cache_clusters" {
-  description = "Number of cache clusters in the replication group"
+variable "sqs_delay_seconds" {
+  description = "The time in seconds that the delivery of all messages in the queue will be delayed"
   type        = number
-  default     = 1
+  default     = 0
 }
 
-variable "elasticache_parameter_group_family" {
-  description = "Family of the parameter group"
-  type        = string
-  default     = "redis6.x"
-}
-
-variable "elasticache_parameter_group_name" {
-  description = "Name of the parameter group"
-  type        = string
-  default     = "redis-params"
-}
-
-variable "elasticache_port" {
-  description = "Port number on which each of the cache nodes will accept connections"
+variable "sqs_max_message_size" {
+  description = "The limit of how many bytes a message can contain before Amazon SQS rejects it"
   type        = number
-  default     = 6379
+  default     = 262144
 }
 
-variable "elasticache_transit_encryption_enabled" {
-  description = "Whether to enable encryption in transit"
-  type        = bool
-  default     = false
+variable "sqs_message_retention_seconds" {
+  description = "The number of seconds Amazon SQS retains a message"
+  type        = number
+  default     = 345600
+}
+
+variable "sqs_receive_wait_time_seconds" {
+  description = "The time for which a ReceiveMessage call will wait for a message to arrive"
+  type        = number
+  default     = 0
+}
+
+variable "sqs_visibility_timeout_seconds" {
+  description = "The visibility timeout for the queue"
+  type        = number
+  default     = 30
+}
+
+# SNS Variables
+variable "sns_topic_name" {
+  description = "The name of the SNS topic"
+  type        = string
+}
+
+variable "sns_subscriptions" {
+  description = "Map of subscription configurations"
+  type = map(object({
+    protocol = string
+    endpoint = string
+  }))
+  default = {}
+}
+
+# DynamoDB Variables
+variable "dynamodb_table_name" {
+  description = "The name of the DynamoDB table"
+  type        = string
+}
+
+variable "dynamodb_billing_mode" {
+  description = "Controls how you are charged for read and write throughput and how you manage capacity"
+  type        = string
+  default     = "PROVISIONED"
+}
+
+variable "dynamodb_hash_key" {
+  description = "The attribute to use as the hash (partition) key"
+  type        = string
+}
+
+variable "dynamodb_range_key" {
+  description = "The attribute to use as the range (sort) key"
+  type        = string
+  default     = ""
+}
+
+variable "dynamodb_read_capacity" {
+  description = "The number of read units for this table"
+  type        = number
+  default     = 5
+}
+
+variable "dynamodb_write_capacity" {
+  description = "The number of write units for this table"
+  type        = number
+  default     = 5
+}
+
+variable "dynamodb_attributes" {
+  description = "List of nested attribute definitions"
+  type = list(object({
+    name = string
+    type = string
+  }))
+}
+
+variable "dynamodb_global_secondary_indexes" {
+  description = "Describe a GSI for the table"
+  type = list(object({
+    name               = string
+    hash_key           = string
+    range_key          = string
+    projection_type    = string
+    non_key_attributes = list(string)
+    read_capacity      = number
+    write_capacity     = number
+  }))
+  default = []
 } 
