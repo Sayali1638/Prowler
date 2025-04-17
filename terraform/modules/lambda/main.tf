@@ -1,11 +1,11 @@
 resource "aws_lambda_function" "main" {
-  filename         = var.filename
-  function_name    = "${var.environment}-${var.function_name}"
-  role            = var.role_arn
-  handler         = var.handler
-  runtime         = var.runtime
-  timeout         = var.timeout
-  memory_size     = var.memory_size
+  filename         = var.lambda_filename
+  function_name    = var.lambda_function_name 
+  role            = aws_iam_role.lambda_role.arn
+  handler         = var.lambda_handler
+  runtime         = var.lambda_runtime
+  timeout         = var.lambda_timeout
+  memory_size     = var.lambda_memory_size
   publish         = true
 
   environment {
@@ -38,3 +38,23 @@ resource "aws_lambda_permission" "main" {
   principal     = "events.amazonaws.com"
   source_arn    = var.event_source_arn
 } 
+
+resource "aws_iam_role" "lambda_role" {
+  name = "lambda_role"
+
+  # Terraform's "jsonencode" function converts a
+  # Terraform expression result to valid JSON syntax.
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
